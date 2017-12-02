@@ -1,0 +1,7 @@
+Options +FollowSymlinks
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-d
+#文件存在，直接访问文件
+RewriteCond %{REQUEST_FILENAME} !-f
+#找不着实际路径的文件，统一交给index.php处理
+RewriteRule ^(.*)$ /index.php/$1 [QSA,PT,L]
