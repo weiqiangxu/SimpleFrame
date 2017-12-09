@@ -1,10 +1,10 @@
 <?php
 /**
-	* @method 历史
+	* @method 产品浏览历史
 	* @author 许
 	* @copyright 2017/7/5
 	*/
-class B2cHistory extends B2cBase
+class ProHistory extends ProBase
 {
 	/**
 	* @method 查询浏览历史
