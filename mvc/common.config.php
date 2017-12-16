@@ -11,7 +11,7 @@ $comConfig['ROOT'] = str_replace ( '\\', '/', dirname ( dirname ( __FILE__ ) ) .
 $comConfig['ROOT_MVC'] = $comConfig['ROOT'].'mvc/';
 
 
-//文件中心,在另mvc框架之中,http接口,用token校验是否具有使用接口权限，因为涉及文件管理
+//文件中心,在另mvc框架之中,http接口,用token校验接口权限
 $comConfig['FILE_CENTER'] = [
 	//商城
 	'smartyframe'=>[
@@ -30,9 +30,9 @@ $comConfig['DB'] = [
 			'db_type'	=>'oci',        //连接数据库类型
 			'db_host'	=>'127.0.0.1', //地址
 			'db_port'	=>'1521',        //端口
-			'db_name'	=>'',            //数据库名称
-			'db_user'	=>'SimpleFrame',       //用户
-			'db_pass'	=>'SimpleFrame007',     //密码
+			'db_name'	=>'db_name',            //数据库名称
+			'db_user'	=>'root',       //用户
+			'db_pass'	=>'123456',     //密码
 			'db_charset'=>'AL32UTF8',       //字符集tecdoc_2012_11
 	],
 	//MySQL数据库   
@@ -53,7 +53,7 @@ $comConfig['CLASSMAP'] = [
     //例 'LibXXX'  => $comConfig['ROOT_MVC'] . 'lib/LibXXX.php'
 ];
 
-//接口配置
+//接口配置(与MVC同级的文件夹需要在此设置否则不会加载进来)
 $comConfig['AUTOLOAD'] = [
     //标识=> ['path'=>路径,'ext'=>文件后缀]
     'Pro' =>  ['path'=>$comConfig['ROOT'].'mod_pro/', 'ext'=> '.class.php']

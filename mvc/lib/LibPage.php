@@ -4,7 +4,7 @@
   * @remark  前台分页类
   * @author Soul 2013/10/15
   */
-! defined ( 'LibPage' ) && define ( 'LibPage', '' );
+! defined ( 'LibPage' ) && define ( 'LibPage', 'all' );
 class LibPage
 {
 	private static $Total = 0;

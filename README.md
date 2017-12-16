@@ -1,2 +1,3 @@
 # SimpleFrame
-基于YP and thinkPHP的diy框架，更多想象，更多自由，更加简单，更加高效。
+精简框架、层级清晰、MVC模式。
+后台管理界面采用  框架 H-ui admin。
