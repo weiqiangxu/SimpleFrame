@@ -6,6 +6,9 @@
   * @copyright 2017/12/09
   */
 
+// PHP文档注释风格使用phpdoc的api文档注释风格，link：https://docs.phpdoc.org/references/phpdoc/index.html
+
+
 //根路径（mvc上一级路径）
 $comConfig['ROOT'] = str_replace ( '\\', '/', dirname ( dirname ( __FILE__ ) ) . '/' );
 $comConfig['ROOT_MVC'] = $comConfig['ROOT'].'mvc/';

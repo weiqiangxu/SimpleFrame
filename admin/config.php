@@ -17,10 +17,10 @@ $config = [
 	'SHOW_RUN_TIME' => false, 
 
 	// 当前模块-入口文件HTTP地址，任何Action路由需要由此前缀
-	'ADMIN_ACTION_URL'=>'http://'.$_SERVER['HTTP_HOST'].'/'.trim(dirname($_SERVER['SCRIPT_NAME']), '\/'),
+	'ADMIN_ACTION_URL'=>'http://'.$_SERVER['HTTP_HOST'].'/'.trim(dirname($_SERVER['SCRIPT_NAME']), '\/').'/index.php/',
 
-	// 管理模块用的H-UI admin静态资源路径
-	'PATH_HUI_ADMIN' => $SitePath.'static/huiadmin/',
+	// 管理模块用的H-UI admin静态资源路径(在此感谢h-admin提供技术支持的H-ui admin模板)
+	'PATH_HUI_ADMIN' => 'http://'.$_SERVER['HTTP_HOST'].'/'.trim(dirname($_SERVER['SCRIPT_NAME']), '\/').'/static/huiadmin/',
 
     /*
      *如果开启LANGUAGE，第一个为语言单元
@@ -44,7 +44,6 @@ $config = [
 	'ACTION_FILE_TAG' => 'Action',                //视图类与文件名后缀标识
 	'PATH_MODULE' => $SitePath.'module/',         //模块目录
 	'PATH_TPL' => $SitePath.'tpl/',               //当前模板-HTML模板目录
-	'PATH_STATIC' => $SitePath.'static'           //当前模板-静态文件夹目录
 ];
 
 //本站自动加载类处理,如果系统CLASSMAP中有相同的类名，则该类名后面的值将替换系统的
