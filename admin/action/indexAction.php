@@ -1,5 +1,5 @@
 <?php
-class IndexAction
+class indexAction
 {
 	/**
 		* 后台管理首页
