@@ -34,12 +34,12 @@ final class mvc
 	<method>
 		<name>Init(初始化)</name>
 		<remark>自动加载,初始化类地图</remark>
-		<author>强哥 2013-4-4</author>
+		<author>xu 2017-12-18</author>
 	</method>
 	*/
 	private static function init() 
 	{
-		// 自动装载 # 注册__autoload()函数
+		// 自动装载 # 注册__autoload()加载器函数。（__autolad魔术方法已经不被推荐使用并于PHP7.2弃用）
 		spl_autoload_register ( array ( __CLASS__, 'autoload' ) );
 		
 		 #公共类映射地图
@@ -69,6 +69,9 @@ final class mvc
 			'LibRpc'     => self::$cfg['PATH_MVC'] . 'lib/LibGet.php',
 			'LibHttp'    => self::$cfg['PATH_MVC'] . 'lib/LibHttp.php'
 		);
+
+		// 以上classsmap为公共类，调用类名触发autoload自动加载器引用对应的路径类文件并实例化
+		// 一下merge进来的CLASSMAP是模块需要自动加载的类，在模块config引用即可
         if( isset(self::$cfg['CLASSMAP'])) {
             array_merge(self::$classmap, self::$cfg['CLASSMAP']);
         }
@@ -77,34 +80,38 @@ final class mvc
 	/*
 	<method>
 		<name>autoload(自动装载)</name>
-		<remark></remark>
+		<remark>实例化类的时候会调用此函数</remark>
 		<Parameter>
 			<para name="$var" type="string">路径/类/方法 (如 pro/test/do1)</para>
 		</Parameter>
-		<author>强哥 2013-4-4</author>
+		<author>xu 2017-12-18</author>
 	</method>
 	*/
 	public static function autoload($class)
 	{
 		/* 判断地图(类)是否已加载 */
-		if (isset(self::$classmap[$class] )) 
+		if (isset(self::$classmap[$class])) 
 		{
 			/* 自动加载主库 */
 			$classfile = self::$classmap [$class];
 			require_once ($classfile);
 			return;
-		}else{
-			/* 自动装载项目模块 */
+		}
+		else
+		{
+			/* 项目模块运行时候，项目模块的接口类的自动加载 */
             foreach(self::$cfg['AUTOLOAD'] as $k => $v){
                 if(strpos($class, $k)===0) {
                     $classfile = $v['path'] . $class . $v['ext'];
                 }
             }
-		}
-		if (is_file ($classfile)){
-			require_once ($classfile);
-		}else{
-			throw new Exception ( $classfile .' 不存在' );
+			/* 判定文件是否存在 */
+			if (is_file ($classfile)){
+				require_once ($classfile);
+			}else{
+				// 抛出异常，这里diy异常处理函数，以更为友好的形式的内容呈现与用户
+				throw new Exception ( $classfile .' 不存在' );
+			}
 		}
 	}
 
@@ -221,16 +228,14 @@ final class mvc
 		<name>Execute(执行MVC)</name>
 		<remark>执行MVC函数,调用类模块,并将参数传递过去</remark>
 		<return>@return void</return>
-		<author>强哥 2013-4-4</author>
+		<author>xu 2017-12-18</author>
 	</method>
 	*/
 	public static function execute(array $config) 
 	{
-		//异步请求判断 soul 2017/6/23
-		$isAjax = !empty($_GET['isAjax']) || !empty($_POST['isAjax'])? 1: 0;
-		!defined ('ISAJAX') && define ('ISAJAX', $isAjax);
 
-		$time_start = time(); //开始运行时间
+		//开始运行时间
+		$time_start = time(); 
 		self::$cfg = $config;
 		/* 初始化类地图 */
 		self::init ();
