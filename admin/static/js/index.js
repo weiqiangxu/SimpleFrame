@@ -1,1 +1,1 @@
-console.log('hello , i am index.php');
+console.log();
