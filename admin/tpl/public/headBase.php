@@ -21,8 +21,26 @@
 <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
 <script>DD_belatedPNG.fix('*');</script>
 <![endif]-->
-<title>后台管理系统</title>
-<meta name="keywords" content="一个简单的框架-后台管理首页">
-<meta name="description" content="简单的框架，精简原生，MVC模式，敏捷开发。">
+
+<!-- 局部静态资源css加载 -->
+<?php if(!empty($HEAD_CSSJS['css'])){ ?>
+	<?php foreach($HEAD_CSSJS['css'] as $key=>$Css){ ?>
+		<link rel="stylesheet" type="text/css" href="<?php echo mvc::$cfg['PATH_STATIC_ADMIN'];?><?php echo $Css;?>?ver=<?php echo time();?>">
+	<?php }?>
+<?php } ?>
+
+
+<!-- 局部静态资源js加载 -->
+<?php if(!empty($HEAD_CSSJS['js'])){ ?>
+	<?php foreach($HEAD_CSSJS['js'] as $key=>$Js){ ?>
+		<script type="text/javascript" src="<?php echo mvc::$cfg['PATH_STATIC_ADMIN'];?><?php echo $Js;?>?ver=<?php echo time();?>"></script>
+	<?php } ?>
+<?php } ?>
+
+
+<title><?php echo $headArr['title'];?></title>
+<meta name="keywords" content="<?php echo $headArr['keyword'];?>"/>
+<meta name="description" content="<?php echo $headArr['des'];?>"/>
+
 </head>
 <body>

@@ -6,6 +6,10 @@ $com_config = require(str_replace('\\','/', dirname ( dirname ( __FILE__ ) ) . '
 //当前模块根路径 D:/webserver/www/SimpleFrame/admin/
 $SitePath = str_replace('\\','/', dirname(__FILE__) . '/');
 
+// $_SERVER['SCRIPT_NAME']输出/Frame/admin/index.php
+// trim(dirname($_SERVER['SCRIPT_NAME']), '\/')输出Frame/admin
+
+
 $config = [
 	//调试模式总开关
 	'DEBUG' => true, 
@@ -21,6 +25,14 @@ $config = [
 
 	// 管理模块用的H-UI admin静态资源路径(在此感谢h-admin提供技术支持的H-ui admin模板)
 	'PATH_HUI_ADMIN' => 'http://'.$_SERVER['HTTP_HOST'].'/'.trim(dirname($_SERVER['SCRIPT_NAME']), '\/').'/static/huiadmin/',
+
+
+	// 管理模块用的admin静态资源路径,只想admin->static,
+	// 为什么与ADMIN_ACTION_URL相比去除了index.php呢
+	// 那么路由就会调用jsAction/janame或者cssAction/cssname方法
+	// 这里路由是：http地址被apache解析到服务器之中admin目录，加上static文件夹指向，若admin后缀为null才会自动索引到index前缀的文件输出
+	'PATH_STATIC_ADMIN' => 'http://'.$_SERVER['HTTP_HOST'].'/'.trim(dirname($_SERVER['SCRIPT_NAME']), '\/').'/static/',
+
 
     /*
      *如果开启LANGUAGE，第一个为语言单元

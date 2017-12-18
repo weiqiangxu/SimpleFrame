@@ -30,7 +30,7 @@
 					<td><input name="" type="checkbox" value=""></td>
 					<td>001</td>
 					<td>分类名称</td>
-					<td><a href="javascript:;" onClick="picture_edit('图库编辑','picture-show.html','10001')"><img width="210" class="picture-thumb" src="<?php echo mvc::$cfg['PATH_HUI_ADMIN'];?>temp/200x150.jpg"></a></td>
+					<td><a href="javascript:;" onClick="picture_edit('图库编辑','<?php echo mvc::$cfg['ADMIN_ACTION_URL'];?>picture/pictureshow','10001')"><img width="210" class="picture-thumb" src="<?php echo mvc::$cfg['PATH_HUI_ADMIN'];?>temp/200x150.jpg"></a></td>
 					<td class="text-l"><a class="maincolor" href="javascript:;" onClick="picture_edit('图库编辑','picture-show.html','10001')">现代简约 白色 餐厅</a></td>
 					<td class="text-c">标签</td>
 					<td>2014-6-11 11:11:42</td>
