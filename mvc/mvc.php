@@ -4,9 +4,9 @@
 	<cate></cate>
 	<name>MVC(MVC框架)</name>
 	<remark>
-	
+		框架入口文件
 	</remark>
-	<author>强哥 2013-4-4</author>
+	<author>hzq 2013-4-4</author>
 </class>
 */
 final class mvc 
@@ -119,6 +119,8 @@ final class mvc
      * 匹配网址路由规则
      */
     private static function route($PathInfo){
+    	// 路由为数组的情况
+    	// example：
 		if(is_array($PathInfo))
 		{
 			foreach(self::$cfg['ROUTE'] as $pattern=>$replace)
@@ -157,7 +159,7 @@ final class mvc
 				'ClassPath'=>'路径','Class'=>'类名','Func'=>'类模块','Params'=>'传参数组'
 			);
 		</return>
-		<author>强哥 2013-4-4</author>
+		<author>hzq 2013-4-4</author>
 	</method>
 	*/
     public static function analyze_url($PathInfo, $QueryString)
@@ -172,12 +174,21 @@ final class mvc
         self::$PATH_INFO = self::route($PathInfo);
         $ClassPath = '';
 		$Params    = array ();
+
+		// 以下后缀.html用于伪静态化，已经去除，当前不再添加.html后缀
         //self::$PATH_INFO = trim(str_replace('.html','',self::$PATH_INFO), '/');
+
+        // '/picture/index'=>'picture/index'
         self::$PATH_INFO = trim(self::$PATH_INFO, '/');
+       
 		/* 对Url网址进行拆分 */
+		// array('picture','index')
 		$path_info_arr = explode ( '/', self::$PATH_INFO );
+
+
         /* 判断语言单元*/
-        if( isset(self::$cfg['LANGUAGE'])) {
+        if( isset(self::$cfg['LANGUAGE']))
+        {
             $routekey = $path_info_arr[0];
             if(in_array(strtolower($routekey), self::$cfg['LANGUAGE']['LIST'])) {
                 array_shift($path_info_arr);
@@ -188,20 +199,30 @@ final class mvc
                 self::$LANGUAGE = self::$cfg['LANGUAGE']['DEFAULT'];
             }
 		}
+
 		/*判断子目录单元,深度路径,使用子目录*/
 		if( isset(self::$cfg['DEPTH_PATH']) && array_key_exists($routekey,self::$cfg['DEPTH_PATH'])){
 			$ClassPath = self::$cfg['DEPTH_PATH'][$routekey];
 			array_shift($path_info_arr);
 		}
+
         /* 返回类名 */
-        $Class 	   = array_shift ( $path_info_arr );
+        $Class = array_shift ( $path_info_arr );
+
         /* 返回方法名 */
-        $Func 	   = array_shift ( $path_info_arr );
+        $Func = array_shift ( $path_info_arr );
+       
 
 		//网址传参
-		foreach($path_info_arr as $v){
+		// 当路由形式入thinkPHP，index.php/picture/index/id/12/catid/14时候
+		// 解析为数组Array ( [0] => id [1] => 12 [2] => catid [3] => 14 )
+		// 之所以对每一个urldecode因为有时候链接参数被url编码
+		foreach($path_info_arr as $v)
+		{
 			$Params[] = urldecode($v);
 		}
+
+		// 处理路由？后面参数
 		if ($QueryString != '')
 		{
 			/* 初始化传参数组 */
@@ -209,6 +230,7 @@ final class mvc
 			$query_str_arr = explode ( '&', trim ( $QueryString, '&' ) );
 			foreach ( $query_str_arr as $v ) 
 			{
+				// 将参数与参数名组成对应数组
 				$tmp = explode ( '=', $v );
 				$Params [$tmp [0]] = urldecode($tmp [1]);
 			}
@@ -248,45 +270,58 @@ final class mvc
 		self::$URL_PARAMS     = $Info ['Params'];
 
 		/* 是否执行系统分析的ACTION */
-		if($config['STATIC_ACTION_FLAG'] != ''){
+		if($config['STATIC_ACTION_FLAG'] != '')
+		{
 			return true;
 		}		
 
-		
-		$ClassName            = self::$URL_CLASS . self::$cfg['ACTION_FILE_TAG'];
+
+		// 为路由分析结果类名称加上特定action标志后缀Action获取控制器名称
+		$ClassName = self::$URL_CLASS . self::$cfg['ACTION_FILE_TAG'];
+
+
 		//读缓存
 		if(self::$cachetime > 0){
 			LibCache::GetPageCache( self::$URL_CLASS_PATH,$ClassName,self::$URL_METHOD,serialize(self::$URL_PARAMS), self::$cachetime);
 		}
-		// 装载视图文件
-		if(isset(self::$cfg['SET_PATH_ACTION']) && self::$cfg['SET_PATH_ACTION']!=''){
-			$classfile = self::$cfg['SET_PATH_ACTION'];
-		}else{
-			$classfile = self::$cfg['PATH_ACTION'];
-		}
+
+		
+		// 装载控制器类文件,增加模块配置文件定义的该模块action所在文件夹之服务器磁盘地址路由
+		$classfile = self::$cfg['PATH_ACTION'];
+
+		// 加入深度路由
 		if (self::$URL_CLASS_PATH != '') {
 			$classfile .= self::$URL_CLASS_PATH . '/';
 		}
+
+		// 拼接获取控制器文件所在路径
 		$classfile .= $ClassName.'.php';
         @require_once ($classfile);
 		// 执行调用
 		$view = new $ClassName ();
+
 		/* 检查类模块方法是否存在 */
 		if (false == method_exists ( $ClassName, self::$URL_METHOD )) {
             /* 检查是否是静态单页输出(静态单页要求以 .html 为后缀),如果方法不存在，模板存在直接输出模板，类的初始化方法起作用。 */
+            // 就是重定向的时候，允许解析出来的func不存在，直接输出对应的html静态页面
             if( substr($_SERVER['REDIRECT_URL'], -1 * strlen(self::$URL_METHOD.'.html')) == self::$URL_METHOD.'.html'){
                 LibTpl::Put();
                 exit;
             }
 			throw new Exception ( self::$URL_CLASS_PATH.'/'.$ClassName.' 类中方法 '.self::$URL_METHOD.' 不存在' );
 		}
+
 		$params = array ();
 		if (! empty ( self::$URL_PARAMS )) 
 		{
+			// 判定此时路由有无?后接参数
 			if($_SERVER ['QUERY_STRING']!=''){
-				/* 反射, 获取参数对应关系 */
+				/* 反射, 获取执行的function参数对应关系 */
 				$reflector   = new ReflectionMethod ( $ClassName, self::$URL_METHOD );
 				$func_params = $reflector->getParameters ();
+				// example:picture/index => index($id,$zid)
+				// res:Array ( [0] => ReflectionParameter Object ( [name] => id ) [1] => ReflectionParameter Object ( [name] => zid ) )
+				// 调用反射去除在url传递的不需要的参数
 				foreach ( $func_params as $k => $v ) 
 				{
 					$pv = self::$URL_PARAMS [$v->name];
@@ -298,9 +333,11 @@ final class mvc
 				$params = self::$URL_PARAMS;
 			}
 		}
+
 		/* 调用类模块 */
 		ob_start ();
 		ob_end_clean ();
+		// 回调执行action->method
         call_user_func_array ( array ( $view, self::$URL_METHOD ), $params );
         $out  =  ob_get_contents ();
 		ob_end_flush();
@@ -333,7 +370,7 @@ function mvc_echo($msg,$isShowServer=false){
 	echo '</div>';
 }
 
-//错误处理
+//在调试模式错误处理
 function _rare_shutdown_catch_error_debug(){
 
 	$_error=error_get_last();
@@ -353,6 +390,8 @@ function _rare_shutdown_catch_error_debug(){
 	}
 }
 
+
+//非调试模式错误处理
 function _rare_shutdown_catch_error(){
 	$_error=error_get_last();
 	$str = sprintf('[%s] file:%s, line:%s,msg:%s',date ( "Y-m-d H:i:s" ),$_error['file'],$_error['line'],$_error['message']);
