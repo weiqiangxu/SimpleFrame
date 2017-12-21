@@ -1,7 +1,7 @@
 <?php
 /**
  * @method  	数据库操作
- * @remark 		从SimpleFrame导入产品信息
+ * @remark 		PDO数据库类
  * @copyright  	Soul Hzq 2016/7/22
  * @version  	2.0.0 
  */

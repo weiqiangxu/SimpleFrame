@@ -28,7 +28,7 @@ final class mvc
 	/* 类地图 */
 	private static $classmap      = null;
 	/* 当前页面缓存时间 */
-	private static $cachetime     = 0;
+	// private static $cachetime     = 0;
 	
 	/*
 	<method>
@@ -121,19 +121,19 @@ final class mvc
     private static function route($PathInfo){
     	// 路由为数组的情况
     	// example：
-		if(is_array($PathInfo))
-		{
-			foreach(self::$cfg['ROUTE'] as $pattern=>$replace)
-			{
-				$pattern = '/'.$pattern.'/i';
-				$tmp = preg_replace($pattern, $replace[0],$PathInfo);
-				if($tmp!=$PathInfo){
-					$PathInfo = $tmp;
-					self::$cachetime = $replace[1];
-					break;
-				}
-			}
-		}
+		// if(is_array($PathInfo))
+		// {
+		// 	foreach(self::$cfg['ROUTE'] as $pattern=>$replace)
+		// 	{
+		// 		$pattern = '/'.$pattern.'/i';
+		// 		$tmp = preg_replace($pattern, $replace[0],$PathInfo);
+		// 		if($tmp!=$PathInfo){
+		// 			$PathInfo = $tmp;
+		// 			self::$cachetime = $replace[1];
+		// 			break;
+		// 		}
+		// 	}
+		// }
         return $PathInfo;
     }
 
@@ -269,23 +269,17 @@ final class mvc
 		self::$URL_METHOD     = ( $Info ['Func']  == '' ) ? 'index' : $Info ['Func'];
 		self::$URL_PARAMS     = $Info ['Params'];
 
-		/* 是否执行系统分析的ACTION */
-		if($config['STATIC_ACTION_FLAG'] != '')
-		{
-			return true;
-		}		
-
 
 		// 为路由分析结果类名称加上特定action标志后缀Action获取控制器名称
 		$ClassName = self::$URL_CLASS . self::$cfg['ACTION_FILE_TAG'];
 
 
-		//读缓存
-		if(self::$cachetime > 0){
-			LibCache::GetPageCache( self::$URL_CLASS_PATH,$ClassName,self::$URL_METHOD,serialize(self::$URL_PARAMS), self::$cachetime);
+		//校验当前请求的action是否为需要缓存的模块，如果是，则输出缓存
+		if(in_array($_SERVER['PATH_INFO'], $config['CACHE_MODULE_TPL'])){
+			// LibCache::GetPageCache( self::$URL_CLASS_PATH,$ClassName,self::$URL_METHOD,serialize(self::$URL_PARAMS), self::$cachetime);
+			LibCache::GetPageCache( self::$URL_CLASS_PATH,$ClassName,self::$URL_METHOD,serialize(self::$URL_PARAMS));
 		}
 
-		
 		// 装载控制器类文件,增加模块配置文件定义的该模块action所在文件夹之服务器磁盘地址路由
 		$classfile = self::$cfg['PATH_ACTION'];
 
@@ -342,8 +336,8 @@ final class mvc
         $out  =  ob_get_contents ();
 		ob_end_flush();
 
-		//写缓存
-		if(self::$cachetime > 0){
+		//如果属于需要静态化的模块就写缓存
+		if(in_array($_SERVER['PATH_INFO'], $config['CACHE_MODULE_TPL'])){
 			LibCache::SetPageCache(self::$URL_CLASS_PATH,$ClassName,self::$URL_METHOD,serialize(self::$URL_PARAMS),$out);
 		}
 		//显示运行花费时间

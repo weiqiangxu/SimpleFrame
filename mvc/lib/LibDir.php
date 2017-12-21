@@ -1,14 +1,22 @@
 <?php
 /**
- * @author HzqGhost <admin@whiledo.com> QQ:313143468
- * @version 1.0.0
+ * @author HzqGhost <admin@whiledo.com> QQ:313143468,xu QQ:435861851 
+ * @version 1.0.1
  *
 */
 class LibDir{
     public static function FormatDir($dir){
-        $dir = str_replace('\\','/',$dir);
-        $dir = str_replace('//','/',$dir);
-        $dir = rtrim($dir,'/').'/';
+        // 有时候深度路径为空这里就要去除调用
+        if($dir!="")
+        {
+            $dir = str_replace('\\','/',$dir);
+            $dir = str_replace('//','/',$dir);
+            $dir = rtrim($dir,'/').'/';
+        }
+        else
+        {
+            $dir ="";
+        }
         return $dir;
     }
 

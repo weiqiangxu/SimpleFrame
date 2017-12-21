@@ -16,7 +16,7 @@ $config = [
 	//模板调试模式
 	'DEBUG_TPL' => false, 
 	//站点名称,必须，于于自动生成时的目录创建(例如缓存)
-	'SITE_NAME' => 'simple_admin', 
+	// 'SITE_NAME' => 'simple_admin', 
 	//显示运行花费时间
 	'SHOW_RUN_TIME' => false, 
 
@@ -67,5 +67,12 @@ $config['AUTOLOAD'] = [
     //标识=> ['path'=>路径,'ext'=>文件后缀]
     'Mod' => ['path'=>$config['PATH_MODULE'], 'ext'=> '.php'],
 ];
+
+// 定义一个变量声明需要实现静态化的action,比如凡是商品详情item/index就校验有无缓存
+$config['CACHE_MODULE_TPL'] = [
+	'/item/index',
+	'/picture/pictureshow'
+];
+
 
 return array_merge_recursive($com_config, $config);

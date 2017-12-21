@@ -1,13 +1,14 @@
 <?php
 /**
- * @author HzqGhost  QQ:313143468
- * @version 1.0.0
+ * @author xu  QQ:435861851
+ * @version 2.0.0
  *
 */
 class LibCache{
 
+	// 获取缓存文件夹路径
 	public static function GetCachePath($type){
-		return mvc::$cfg['PATH_CACHE'].mvc::$cfg['SITE_NAME'].'/'. $type .'/';
+		return mvc::$cfg['PATH_CACHE'].'/'. $type .'/';
 	}
    
     /**页面缓存文件名
@@ -15,10 +16,11 @@ class LibCache{
      * @return  带目录的文件名
      */
     public static function GetPageFilename($subpath,$class,$method,$param){
+    	// 缓存路径全路径
 		$path =   self::GetCachePath('page').LibDir::FormatDir($subpath).LibDir::FormatDir($class).LibDir::FormatDir($method);
+		// 将参数拼接为文件名
 		$filename = md5($subpath.$class.$method.$param).'.html';
-		$subpath = substr($filename,0,2);
-		return $path.$subpath.'/'.$filename;
+		return $path.$filename;
 	}
 
     /**写页面缓存
@@ -36,16 +38,18 @@ class LibCache{
      * @param  [string....] :参数来源于 mvc主类提供的URL分析结构
      * @return  
      */
-    public static function GetPageCache($subpath,$class,$method,$param, $cachetime){
+    public static function GetPageCache($subpath,$class,$method,$param)
+    {
 		$filename =  self::GetPageFilename($subpath,$class,$method,$param);
+		// 去除缓存时间限定只要存在同样action同样参数的缓存就输出缓存
 		if(file_exists($filename)){
 			$file = new LibFile($filename);
-			if( $cachetime==9 || (time() - $file->FileTime()) < $cachetime ){
+			// if( $cachetime==9 || (time() - $file->FileTime()) < $cachetime ){
 				header("Content-Encoding: gzip");
 				header("Vary: Accept-Encoding");
 				echo $file->GetData();
 				exit;
-			}
+			// }
 		}
 	}
 
