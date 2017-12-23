@@ -328,6 +328,7 @@ final class mvc
 			}
 		}
 
+		// 这里需要保证或php.ini里面的缓冲区足够大否则会出现缓存下来的静态页面部分缺失
 		/* 调用类模块 */
 		ob_start ();
 		ob_end_clean ();
