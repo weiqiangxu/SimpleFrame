@@ -110,4 +110,32 @@ class LibDir{
         return true;
     }
 
+
+
+    /**
+     * 复制文件夹
+     * @param $source 目标文件夹
+     * @param $dest 复制后生成的文件夹
+     * @author xu
+     * @copyright 2017-12-26
+     */
+    public static function copydir($source, $dest)
+    {
+        if (!file_exists($dest))
+        {
+            if (!@mkdir($dest, 0777)){
+                return false;
+            }
+        }
+        $handle = opendir($source);
+        while (($item = readdir($handle)) !== false) {
+            if ($item == '.' || $item == '..') continue;
+            $_source = $source . '/' . $item;
+            $_dest = $dest . '/' . $item;
+            if (is_file($_source)) copy($_source, $_dest);
+            if (is_dir($_source)) self::copydir($_source, $_dest);
+        }
+        closedir($handle);
+    }
+
 }

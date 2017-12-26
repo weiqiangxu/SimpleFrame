@@ -272,7 +272,7 @@ class LibDb
         $this->pdo = null;
     }
 
-	/**开始事物处理*/
+	/**开始事务*/
 	public function Begin()
 	{
 		if(!isset($GLOBALS['libdb_transaction']['register']))
@@ -290,7 +290,7 @@ class LibDb
 		$GLOBALS['libdb_transaction']['key'][$this->pdo_key]['is_open'] = true;
 	}
 
-	/**提交事物处理*/
+	/**提交事务*/
 	public function End()
 	{
 		$GLOBALS['libdb_transaction']['register']--;
