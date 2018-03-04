@@ -5,6 +5,13 @@
  *
 */
 class LibDir{
+
+    /**
+     * 格式化路径
+     * @param $dir 待格式化的目录
+     * @author xu
+     * @copyright 2018-03-04
+     */
     public static function FormatDir($dir){
         // 有时候深度路径为空这里就要去除调用
         if($dir!="")
@@ -20,10 +27,7 @@ class LibDir{
         return $dir;
     }
 
-    /**
-     * @param $dir 待查询的目录
-     * @param $files 返回查询的结果
-     */
+
     public static function SearchFile($dir, &$files){
         $dir = self::FormatDir($dir);
         $arr = scandir($dir);
@@ -37,7 +41,12 @@ class LibDir{
         }
     }
 
-
+    /**
+     * 创建文件夹
+     * @param $dir 目标文件夹
+     * @author xu
+     * @copyright 2018-03-04
+     */
     public static function CreateDir($dir){
         if(is_dir($dir)) return true;
         $dir = self::FormatDir($dir);
@@ -53,7 +62,15 @@ class LibDir{
         @clearstatcache();
         return true;
     }
-    public static function DeleteDir($dir){
+
+    /**
+     * 清空文件夹
+     * @param $dir 目标文件夹
+     * @param $keep 是否保留被清空的文件夹
+     * @author xu
+     * @copyright 2018-03-04
+     */
+    public static function ClearDir($dir,$keep = false){
         if(!is_dir($dir)) return true;
         if($handle = opendir($dir)){
             while(($file = readdir($handle))!==false){
@@ -67,31 +84,18 @@ class LibDir{
             }
             closedir($handle);
             @clearstatcache();
-            return @rmdir($dir);
+            if(!$keep) @rmdir($dir);
         }
         return true;
     }
 
-	public static function ClearDir($dir){
-        if(!is_dir($dir)) return true;
-        if($handle = opendir($dir)){
-            while(($file = readdir($handle))!==false){
-                if($file!='.' && $file!='..'){
-                    if(is_dir($dir.'/'.$file)){
-                        self::DeleteDir($dir.'/'.$file);
-                    }else{
-                        unlink($dir.'/'.$file);
-                    }
-                }
-            }
-            closedir($handle);
-            @clearstatcache();
-        }
-        return true;
-    }
-	
-
-	/**清除文件修改时间早于时间戳$time的文件**/
+    /**
+     * 清除文件修改时间早于时间戳$time的文件
+     * @param $dir 目标文件夹
+     * @param $time 时间戳
+     * @author xu
+     * @copyright 2018-03-04
+     */
 	public static function ClearFile($dir, $time){
         if(!is_dir($dir)) return true;
         if($handle = opendir($dir)){
@@ -109,8 +113,6 @@ class LibDir{
         }
         return true;
     }
-
-
 
     /**
      * 复制文件夹

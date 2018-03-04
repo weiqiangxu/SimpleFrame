@@ -74,7 +74,6 @@ class LibFile{
 	  * @return 
 	  		成功：true	
 			失败：false
-
 	  */	
 	public function WriteData($FileName, $Mode, $Data)
 	{
