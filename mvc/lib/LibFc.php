@@ -674,4 +674,185 @@ class LibFc
 		$guid = empty($type)? $guid: strtoupper(md5($guid));
 		return $guid;
 	}
+
+
+	/**
+     * 数组转换
+	 * @param arr array(0=>'a', 1=>'b', 2=>'c', 3=>1)
+	 * @copyright soul 2017/11/1
+	 * @return array('a'=>array('b'=>array('c'=>array('@end'=>1))))
+     */
+    static function arrToKeyArr($Arr)
+    {
+        $SortArr = array();
+        foreach($Arr as $V)
+        {
+            $V = trim($V);
+            if($V != '' && !in_array($V, $SortArr))
+            {
+                $SortArr[] = trim($V);
+            }
+        }
+        $Out = array();
+        for($I = count($SortArr)-1; $I >=0 ;$I--)
+        {
+            if(isset($SortArr[$I-1]))
+            {
+                if($I == count($SortArr)-1)
+                {
+                    $Out[$SortArr[$I-1]] = array('@end'=>$SortArr[$I]);
+                }
+                else
+                {
+                    $Temp = $Out;
+                    $Out = array();
+                    $Out[$SortArr[$I-1]] = $Temp;
+                }
+            }
+        }
+        return $Out;
+    }
+
+	/**
+     * 
+	 * @param KeyArr 键是数组
+	 * @param Arr 需要搜索的数组
+	 * @copyright soul 2017/11/1
+	 * @return  array('keys'=>匹配的键一维数组, 'value'=>值);
+     */
+    static function keyArrExists($KeyArr, $Arr)
+    {
+        $OutArr = array('keys'=>array(), 'value'=>'');
+        foreach($KeyArr as $V)
+        {
+
+            if(isset($Arr[$V]))
+            {
+                $OutArr['keys'][] = $V;
+                $Arr = $Arr[$V];
+                if(isset($Arr['@end']))
+                {//匹配到
+                    $OutArr['value'] = $Arr['@end'];
+                    break;
+                }
+            }
+            else if(isset($Arr['@end']))
+            {//匹配到
+                $OutArr['value'] = $Arr['@end'];
+                break;
+            }
+            else
+            {
+                $OutArr['keys'] = array();
+                 break;
+            }
+        }
+        return $OutArr;
+    }
+
+
+	/**
+     * 
+     * @method 将字符串编码转换为utf-8
+	 * @param file 文件路径 /tmp/test.csv
+	 * @copyright xu 2018/04/25
+	 * @return  str[type => utf-8]
+     */
+	static function charaset($str)
+	{
+		if(empty($str))
+			return '';
+		$fileType = mb_detect_encoding($str , array('UTF-8','GBK','LATIN1','BIG5')) ;   
+		if( $fileType != 'UTF-8'){   
+			$str = mb_convert_encoding($str ,'utf-8' , $fileType);   
+		}
+		return $str;
+	}
+
+
+	/**
+     * 
+     * @method 解析csv文件为一个key-value数组
+	 * @param file 文件路径 /tmp/test.csv
+	 * @copyright xu 2018/03/01
+	 * @return  array
+     */
+	static function readCsvToArr($file)
+	{
+		$temp = array();
+		
+		if(!file_exists($file))
+			return 'file dose not exist!';
+
+		$res = array_map('str_getcsv', file($file));
+		foreach ($res as $k => $v) {
+			$res[$k][0] = LibFc::charaset($v[0]);
+		}
+		// 获取所有键值:
+		$keyArr = $res[1];
+		// 获取csv文件配件值
+		if (($handle = fopen($file, "r")) !== FALSE) {
+			$row = 1;
+		    while (($data = fgetcsv($handle)) !== FALSE) {
+		    	// 空行跳出循环
+		    	if(empty(current($data)) && count($data)==1)
+		    	{
+		    		continue;
+		    	}
+		    	// 非空行存储数值
+		    	if($row > 2)
+		    	{	
+			        $num = count($data);
+			        for ($c=0; $c < $num; $c++) {
+			            $temp[$row][$keyArr[$c]] = LibFc::charaset($data[$c]);
+			        }
+		    	}
+		        $row++;
+		    }
+		    fclose($handle);
+		}
+		return $temp;
+	}
+
+
+	/**
+     * 
+     * @method 
+	 * @param [string] $str 需要截取的字符串
+	 * @param [int]    $len  需要保留的长度
+	 * @copyright xu 2018/03/01
+	 * @return  array
+     */
+	static function CutStr($str,$len)
+	{
+		$temp = mb_substr($str, 0 , $len);
+		if(mb_strlen($str,'utf-8') > $len) $temp.='...';
+		return $temp;
+	}
+
+	/**
+     * 
+     * @method 
+	 * @param [string] $str 需要正则校验的字符串
+	 * @param [string] $type 字段名称
+	 * @copyright xu 2018/04/13
+	 * @return  array
+     */
+	static function RegularValida($str,$type)
+	{
+		
+		$data = false;
+		switch($type)
+		{
+			// 信用代码
+			case 'societyCode': 
+				$data = preg_match("/^[0-9a-zA-Z]{14,18}$/", $str);
+				break;
+			// 公司名称
+			case 'companyName':
+				$data = preg_match("/^[\x{4e00}-\x{9fa5}]{5,}$/u",$str);
+			break;
+		}
+		return $data;
+	}
 }
